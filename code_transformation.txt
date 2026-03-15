@@ -1,0 +1,109 @@
+ let’s walk through the transformation of the codebase step by step so you can see how we evolved from a simple quiz app into a full AI‑powered system with user answer tracking and retry logic.
+
+Step 1: Basic Database Setup
+We started with db_setup.py to create a simple SQLite table for questions:
+
+python
+CREATE TABLE questions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fact TEXT,
+    question TEXT,
+    option_a TEXT,
+    option_b TEXT,
+    option_c TEXT,
+    option_d TEXT,
+    answer TEXT
+);
+👉 This gave us a place to store facts and generated questions.
+
+🔹 Step 2: Template‑Based Question Generator
+quiz_generator.py initially used hardcoded options:
+
+python
+def generate_question_from_fact(fact):
+    question = f"Which event is related to: {fact}?"
+    options = ["India", "USA", "China", "Japan"]
+    answer = "India" if "India" in fact else options[1]
+    return question, options, answer
+👉 This was simple but static.
+
+🔹 Step 3: Fetch Sources (APIs + PDFs)
+We added fetch_sources.py to pull data from:
+
+NewsAPI (via requests)
+
+Google News RSS (via feedparser)
+
+Monthly PDFs (via pdfplumber)
+
+Each fact was passed into save_question(fact).
+
+🔹 Step 4: Flask Web App
+app.py served questions via a browser:
+
+python
+@app.route("/")
+def quiz():
+    questions = get_questions()
+    return render_template("quiz.html", questions=questions)
+👉 At this stage, users could only view questions, not interact.
+
+🔹 Step 5: AI‑Powered Question Generation
+We upgraded quiz_generator.py with Hugging Face pipelines:
+
+T5 for question generation
+
+DistilBERT QA for answer extraction
+
+Rule‑based distractors for dynamic options
+
+python
+qg_pipeline = pipeline("text2text-generation", model="valhalla/t5-small-qa-qg-hl")
+qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+👉 Now questions and answers were generated dynamically.
+
+🔹 Step 6: User Answer Tracking
+We extended the DB with a responses table:
+
+python
+CREATE TABLE responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question_id INTEGER,
+    selected_answer TEXT,
+    correct INTEGER,
+    FOREIGN KEY(question_id) REFERENCES questions(id)
+);
+👉 This allowed us to store what each user selected and whether it was correct.
+
+🔹 Step 7: Interactive Quiz + Results
+We updated app.py and quiz.html:
+
+Users submit answers via a form.
+
+Answers are stored in responses.
+
+A /results page shows correctness.
+
+A /retry page regenerates quiz only from wrong answers.
+
+🔹 Step 8: Retry Wrong Answers
+We added logic in app.py:
+
+python
+@app.route("/retry")
+def retry_wrong():
+    c.execute("SELECT ... FROM responses r JOIN questions q ON r.question_id=q.id WHERE r.correct=0")
+👉 Users can now practice only their mistakes.
+
+🚀 Current State
+Data ingestion: APIs + PDFs
+
+AI generation: Hugging Face models for Q&A
+
+Storage: SQLite with questions + responses
+
+Delivery: Flask web app with interactive quiz
+
+Learning loop: Retry wrong answers
+
+✅ That’s the full transformation journey. We went from a static quiz to a self‑updating, AI‑powered, user‑adaptive quiz system.
