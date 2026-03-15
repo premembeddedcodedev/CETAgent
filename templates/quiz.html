@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily GK Quiz</title>
+</head>
+<body>
+    <h1>Today's GK Quiz</h1>
+    {% for q in questions %}
+        <p><b>{{ q[0] }}</b></p>
+        <ul>
+            <li>A) {{ q[1] }}</li>
+            <li>B) {{ q[2] }}</li>
+            <li>C) {{ q[3] }}</li>
+            <li>D) {{ q[4] }}</li>
+        </ul>
+        <p><i>Answer: {{ q[5] }}</i></p>
+        <hr>
+    {% endfor %}
+</body>
+</html>
+
