@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Results</title>
+</head>
+<body>
+    <h1>Your Results</h1>
+    {% for r in results %}
+        <p><b>{{ r[0] }}</b></p>
+        <p>You answered: {{ r[1] }}</p>
+        <p>Correct answer: {{ r[2] }}</p>
+        <p>Status: {% if r[3] == 1 %} ✅ Correct {% else %} ❌ Wrong {% endif %}</p>
+        <hr>
+    {% endfor %}
+    <a href="/retry">Retry Wrong Answers</a>
+</body>
+</html>

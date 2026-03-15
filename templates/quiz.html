@@ -5,17 +5,18 @@
 </head>
 <body>
     <h1>Today's GK Quiz</h1>
+    <form method="POST">
     {% for q in questions %}
-        <p><b>{{ q[0] }}</b></p>
+        <p><b>{{ q[1] }}</b></p>
         <ul>
-            <li>A) {{ q[1] }}</li>
-            <li>B) {{ q[2] }}</li>
-            <li>C) {{ q[3] }}</li>
-            <li>D) {{ q[4] }}</li>
+            <li><input type="radio" name="q_{{ q[0] }}" value="{{ q[2] }}"> A) {{ q[2] }}</li>
+            <li><input type="radio" name="q_{{ q[0] }}" value="{{ q[3] }}"> B) {{ q[3] }}</li>
+            <li><input type="radio" name="q_{{ q[0] }}" value="{{ q[4] }}"> C) {{ q[4] }}</li>
+            <li><input type="radio" name="q_{{ q[0] }}" value="{{ q[5] }}"> D) {{ q[5] }}</li>
         </ul>
-        <p><i>Answer: {{ q[5] }}</i></p>
         <hr>
     {% endfor %}
+    <button type="submit">Submit Answers</button>
+    </form>
 </body>
 </html>
-
